@@ -21,6 +21,7 @@
 
         const localVideo = document.getElementById('localVideo');
         const remoteVideo = document.getElementById('remoteVideo');
+        let iceCandidatesBuffer = [];
 
         // Get access to camera and microphone
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -42,6 +43,18 @@
                     peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
                         .then(() => {
                             console.log('Remote description set successfully');
+                            // Process buffered ICE candidates
+                            iceCandidatesBuffer.forEach(candidate => {
+                                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                                    .then(() => {
+                                        console.log('Buffered ICE candidate added successfully');
+                                    })
+                                    .catch(error => {
+                                        console.error('Error adding buffered ICE candidate:', error);
+                                    });
+                            });
+                            // Clear ICE candidates buffer
+                            iceCandidatesBuffer = [];
                         })
                         .catch(error => {
                             console.error('Error setting remote description:', error);
@@ -60,6 +73,8 @@
                             });
                     } else {
                         console.warn('Received ICE candidate before setting remote description');
+                        // Buffer ICE candidate
+                        iceCandidatesBuffer.push(data.candidate);
                     }
                 });
 
