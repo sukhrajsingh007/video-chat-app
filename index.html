@@ -37,38 +37,30 @@
                         socket.emit('offer', { type: 'offer', sdp: peerConnection.localDescription });
                     });
 
-                // Receive remote stream
+                // Receive remote stream and set remote description
                 socket.on('answer', (data) => {
-                    if (!peerConnection.currentRemoteDescription) {
-                        peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
-                            .then(() => {
-                                console.log('Remote description set successfully');
-                                // Add any pending ICE candidates
-                                data.candidates.forEach(candidate => {
-                                    peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
-                                        .then(() => {
-                                            console.log('ICE candidate added successfully');
-                                        })
-                                        .catch(error => {
-                                            console.error('Error adding ICE candidate:', error);
-                                        });
-                                });
-                            })
-                            .catch(error => {
-                                console.error('Error setting remote description:', error);
-                            });
-                    }
+                    peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
+                        .then(() => {
+                            console.log('Remote description set successfully');
+                        })
+                        .catch(error => {
+                            console.error('Error setting remote description:', error);
+                        });
                 });
 
                 // Handle ICE candidates
                 socket.on('ice-candidate', (data) => {
-                    peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate))
-                        .then(() => {
-                            console.log('ICE candidate added successfully');
-                        })
-                        .catch(error => {
-                            console.error('Error adding ICE candidate:', error);
-                        });
+                    if (peerConnection.remoteDescription) {
+                        peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate))
+                            .then(() => {
+                                console.log('ICE candidate added successfully');
+                            })
+                            .catch(error => {
+                                console.error('Error adding ICE candidate:', error);
+                            });
+                    } else {
+                        console.warn('Received ICE candidate before setting remote description');
+                    }
                 });
 
                 // Send ICE candidates to signaling server
