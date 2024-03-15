@@ -73,7 +73,7 @@
                             });
                     } else {
                         console.warn('Received ICE candidate before setting remote description');
-                        // Buffer ICE candidate
+                        // Buffer ICE candidate if remote description is not set
                         iceCandidatesBuffer.push(data.candidate);
                     }
                 });
