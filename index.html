@@ -39,23 +39,25 @@
 
                 // Receive remote stream
                 socket.on('answer', (data) => {
-                    peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
-                        .then(() => {
-                            console.log('Remote description set successfully');
-                            // After setting remote description, add ICE candidates
-                            data.candidates.forEach(candidate => {
-                                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
-                                    .then(() => {
-                                        console.log('ICE candidate added successfully');
-                                    })
-                                    .catch(error => {
-                                        console.error('Error adding ICE candidate:', error);
-                                    });
+                    if (!peerConnection.currentRemoteDescription) {
+                        peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
+                            .then(() => {
+                                console.log('Remote description set successfully');
+                                // Add any pending ICE candidates
+                                data.candidates.forEach(candidate => {
+                                    peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                                        .then(() => {
+                                            console.log('ICE candidate added successfully');
+                                        })
+                                        .catch(error => {
+                                            console.error('Error adding ICE candidate:', error);
+                                        });
+                                });
+                            })
+                            .catch(error => {
+                                console.error('Error setting remote description:', error);
                             });
-                        })
-                        .catch(error => {
-                            console.error('Error setting remote description:', error);
-                        });
+                    }
                 });
 
                 // Handle ICE candidates
