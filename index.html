@@ -21,7 +21,7 @@
 
         const localVideo = document.getElementById('localVideo');
         const remoteVideo = document.getElementById('remoteVideo');
-        let iceCandidatesBuffer = [];
+        let iceCandidates = [];
 
         // Get access to camera and microphone
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -29,42 +29,36 @@
                 // Display local video
                 localVideo.srcObject = stream;
 
-                // Send offer to signaling server
+                // Initialize peer connection
                 const peerConnection = new RTCPeerConnection();
                 stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+
+                // Send offer to signaling server
                 peerConnection.createOffer()
                     .then(offer => peerConnection.setLocalDescription(offer))
                     .then(() => {
                         socket.emit('offer', { type: 'offer', sdp: peerConnection.localDescription });
                     });
 
-                // Receive remote stream and set remote description
+                // Receive answer from signaling server
                 socket.on('answer', (data) => {
                     peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
                         .then(() => {
                             console.log('Remote description set successfully');
-                            // Process buffered ICE candidates
-                            iceCandidatesBuffer.forEach(candidate => {
-                                peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
-                                    .then(() => {
-                                        console.log('Buffered ICE candidate added successfully');
-                                    })
-                                    .catch(error => {
-                                        console.error('Error adding buffered ICE candidate:', error);
-                                    });
-                            });
-                            // Clear ICE candidates buffer
-                            iceCandidatesBuffer = [];
+                            // Add buffered ICE candidates
+                            iceCandidates.forEach(candidate => peerConnection.addIceCandidate(new RTCIceCandidate(candidate)));
+                            iceCandidates = []; // Clear ICE candidates buffer
                         })
                         .catch(error => {
                             console.error('Error setting remote description:', error);
                         });
                 });
 
-                // Handle ICE candidates
+                // Receive ICE candidates from signaling server
                 socket.on('ice-candidate', (data) => {
+                    const candidate = new RTCIceCandidate(data.candidate);
                     if (peerConnection.remoteDescription) {
-                        peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate))
+                        peerConnection.addIceCandidate(candidate)
                             .then(() => {
                                 console.log('ICE candidate added successfully');
                             })
@@ -72,9 +66,7 @@
                                 console.error('Error adding ICE candidate:', error);
                             });
                     } else {
-                        console.warn('Received ICE candidate before setting remote description');
-                        // Buffer ICE candidate if remote description is not set
-                        iceCandidatesBuffer.push(data.candidate);
+                        iceCandidates.push(candidate); // Buffer ICE candidates
                     }
                 });
 
