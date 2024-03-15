@@ -39,12 +39,24 @@
 
                 // Receive remote stream
                 socket.on('answer', (data) => {
-                    peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                    peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp))
+                        .then(() => {
+                            console.log('Remote description set successfully');
+                        })
+                        .catch(error => {
+                            console.error('Error setting remote description:', error);
+                        });
                 });
 
                 // Handle ICE candidates
                 socket.on('ice-candidate', (data) => {
-                    peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+                    peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate))
+                        .then(() => {
+                            console.log('ICE candidate added successfully');
+                        })
+                        .catch(error => {
+                            console.error('Error adding ICE candidate:', error);
+                        });
                 });
 
                 // Send ICE candidates to signaling server
