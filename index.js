@@ -1,47 +1,32 @@
-// index.js
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
+// app.js
 
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
+const axios = require('axios');
 
-// Serve HTML file
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
+// Example text for analysis
+const text = 'I love using the Aylien Text Analysis API!';
 
-// Socket.io connection
-io.on('connection', (socket) => {
-    console.log('A user connected');
+// Parameters for sentiment analysis
+const params = {
+    text: text,
+    mode: 'document',
+    language: 'en'
+};
 
-    // Handle signaling
-    socket.on('offer', (data) => {
-        console.log('Offer received:', data);
-        socket.broadcast.emit('offer', data);
+// Headers for the request
+const headers = {
+    'X-Application-Id': '62d99fc5',
+    'X-Application-Key': 'a63411be81ebe955084b3aaca19e9264',
+    'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+// Aylien Text Analysis API endpoint URL
+const apiUrl = 'https://api.aylien.com/api/v1/sentiment';
+
+// Perform sentiment analysis with Axios
+axios.post(apiUrl, params, { headers })
+    .then(response => {
+        console.log('Sentiment Analysis:', response.data);
+    })
+    .catch(error => {
+        console.error('Error:', error.response.data);
     });
-
-    socket.on('answer', (data) => {
-        console.log('Answer received:', data);
-        socket.broadcast.emit('answer', data);
-    });
-
-    socket.on('ice-candidate', (data) => {
-        console.log('ICE candidate received:', data);
-        socket.broadcast.emit('ice-candidate', data);
-    });
-
-    // Handle disconnection
-    socket.on('disconnect', () => {
-        console.log('A user disconnected');
-    });
-});
-
-// Start server
-// const IP_ADDRESS = '192.168.11.14';
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-    // console.log(`Server running at http://${IP_ADDRESS}:${PORT}/`);
-    console.log(`Server running at ${PORT}/`);
-});
