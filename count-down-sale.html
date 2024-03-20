@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3 Week Sale</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+    <style media="all">
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .c-week-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .offer-row-heading {
+            width: 100%;
+            min-height: 160px;
+            background-color: #eeeeee;
+            border-radius: 4px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            order: 1;
+        }
+        .offer-row-heading > p {
+            margin-bottom: 5px;
+        }
+        .offer-row-heading a {
+            color: #fff;
+            padding: 10px 20px;
+            background-color: #505050;
+            border-radius: 4px;
+            text-decoration: none;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .c-week-btn-active {
+            display: none;
+        }
+        .offer-row-heading.active {
+            background-color: #b6eaf9;
+            box-shadow: 0px 8px 14px -10px rgba(0,0,0,0.5);
+            order: 0;
+        }
+        .offer-row-heading.active a {
+            color: #fff;
+            padding: 10px 20px;
+            background-color: #00a733;
+        }
+        .offer-row-heading.active .c-week-btn-active {
+            display: block;
+        }
+        .offer-row-heading.active .c-week-btn-expired {
+            display: none;
+        }
+    </style>
+
+    <div class="c-week-wrapper">
+        <div class="offer-row-heading active" date-start="2024/3/1 18:10:00" date-expire="2024/3/1 18:11:00">
+            <p>Week 1.</p>
+            <a href="#">
+                <span class="c-week-btn-active">Click here</span>
+                <span class="c-week-btn-expired">Expired</span>
+            </a>
+        </div>
+        <div class="offer-row-heading" date-start="2024/3/1 18:11:00" date-expire="2024/3/19 00:00:00">
+            <p>Week 2.</p>
+            <a href="#">
+                <span class="c-week-btn-active">Click here</span>
+                <span class="c-week-btn-expired">Expired</span>
+            </a>
+        </div>
+        <div class="offer-row-heading" date-start="2024/3/19 00:00:00" date-expire="2024/3/26 00:00:00">
+            <p>Week 3.</p>
+            <a href="#">
+                <span class="c-week-btn-active">Click here</span>
+                <span class="c-week-btn-expired">Expired</span>
+            </a>
+        </div>
+    </div>
+
+    <style>
+        .offer-row-heading {
+            display: none;
+        }
+        .offer-row-heading.active, .offer-row-heading.expired {
+            display: flex;
+        }
+    </style>
+
+    <script>
+        const arrWeeks = document.querySelectorAll('.offer-row-heading');
+        const arrTimesStart = [];
+        const arrTimesEnd = [];
+
+        [...arrWeeks].forEach((week)=>{
+            arrTimesStart.push(new Date(week.getAttribute('date-start')).getTime());
+            arrTimesEnd.push(new Date(week.getAttribute('date-expire')).getTime());
+        });
+
+        setInterval(function(){
+            // const easternTime = new Date().toLocaleString("en-US", {timeZone: 'America/New_York'});
+            // EST Time Now - milliseconds
+            // const easternTimeSeconds = new Date(easternTime).getTime();
+            // IST Time Now - milliseconds
+            let dateToday = new Date().getTime();
+
+            for(i=0; i < arrTimesEnd.length; i++) {
+                // if date is passed remove active class
+                if( dateToday >= arrTimesEnd[i]) {
+                    arrWeeks[i].classList.remove('active');
+                    arrWeeks[i].classList.add('expired');
+                } 
+                // if date is in the given BallYard add active class
+                else if ( dateToday <= arrTimesEnd[i] && dateToday >= arrTimesStart[i] ) {
+                    arrWeeks[i].classList.add('active');
+                }
+                // if date is in the Future remove active class
+                else if ( dateToday <= arrTimesEnd[i] && dateToday <= arrTimesStart[i] ) {
+                    arrWeeks[i].classList.remove('active');
+                }
+            }
+        }, 1000);
+    </script>
+
+    <div class="buttons">
+        <span class="prev" onclick="slide(this.className)">Prev</span>
+        <span class="next" onclick="slide(this.className)">Next</span>
+    </div>
+    
+    <style media="all">
+        .buttons {
+            position: fixed;
+            right: 50px;
+            top: 50%;
+
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .buttons span {
+            background-color: #86df10;
+            color: #fafafa;
+            height: 40px;
+            width: 90px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 8px 14px -10px rgba(0,0,0,0.5);
+            cursor: pointer;
+            pointer-events: all;
+            user-select: none;
+        }
+        .buttons span:hover {
+            background-color:darkslategrey
+        }
+    </style>
+
+    <script>
+        var active = document.getElementsByClassName("active");
+        function slide(prevNext) {
+            if (prevNext === "next") {
+                if (active[0].nextElementSibling) {
+                    active[0].nextElementSibling.classList.add("active");
+                    active[0].classList.remove("active");
+                }
+            } else {
+                if (active[0].previousElementSibling) {
+                    active[0].previousElementSibling.classList.add("active");
+                    active[active.length - 1].classList.remove("active");
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>

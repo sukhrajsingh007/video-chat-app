@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+    
+    <!-- Documentaion Link -->
+    <!-- https://developers.marketo.com/rest-api/ -->
+
+    <!-- end point -->
+    <!-- https://100-AEK-913.mktorest.com/rest -->
+
+    <!-- Identity -->
+    <!-- https://100-AEK-913.mktorest.com/identity -->
+
+    <!-- Test API Role -->
+    <!-- niharikag123@grazitti.com -->
+
+    <!-- https://developers.marketo.com/rest-api/base-url/ -->
+
+    <!-- sukhraj.singh@grazitti.com -->
+    <!-- Client Id: d1338c8d-9a62-4721-b611-0df4a3ed121a
+    Client Secret: 91C2fKKGEYguXGxVdrA3Ilt1sb07Dlwf
+    Authorized User: sukhraj.singh@grazitti.com 
+    Token: 3040fbb0-0409-439e-b795-88342d527ff4:ab -->
+    <!-- Endpoint: https://100-AEK-913.mktorest.com/rest  -->
+
+    <!-- https://100-aek-913.mktorest.com/rest/v1/leads.json?access_token=ed358142-76c8-49dd-8fc1-19e1fd5a66ad:ab&filterType=email&filterValues=parth.sharma@grazitti.com -->
+
+    <!-- file data -->
+    <!-- https://100-aek-913.mktorest.com/rest/asset/v1/file/1045549/content.json?access_token=f7716bd3-0180-41a1-a7ef-e8d1ced5d657:ab -->
+
+    <!-- email content -->
+    <!-- https://100-aek-913.mktorest.com/rest/asset/v1/email/38221/content.json?access_token=f7716bd3-0180-41a1-a7ef-e8d1ced5d657:ab -->
+
+    <!-- email meta data` -->
+    <!-- https://100-aek-913.mktorest.com/rest/asset/v1/email/byName.json?access_token=da1ccea0-da9f-4875-9622-424502d156ca:ab&name=test-email-1-9 -->
+
+    <!-- Email Variables -->
+    <!-- https://100-aek-913.mktorest.com/rest/asset/v1/email/38221/variables.json?access_token=da1ccea0-da9f-4875-9622-424502d156ca:ab -->
+
+    <!-- SmartList -->
+    <!-- https://100-aek-913.mktorest.com/rest/asset/v1/smartLists.json?access_token=da1ccea0-da9f-4875-9622-424502d156ca:ab -->
+
+    <!-- Subscription: mktodemo17
+    Data center: aba
+    Munchkin ID: 100-AEK-913 -->
+
+    <style>
+        body, html {margin: 0;padding: 0; text-align: left;font-family: 'Roboto', sans-serif;letter-spacing: 0.1px;}
+        h1 {font-size: 3rem;font-weight: 100;}
+        p {font-size: 0.75rem;}
+        h1, #loading, p {text-align: center;color: #ffffff;}
+        #employees {margin: 0 auto 40px;border-collapse: collapse;}
+        #employees th, #employees td {width: 250px;font-size: 1.25rem;color: #ffffff;border: 1px solid #ffffff;padding: 0.5rem 1rem 0.5rem 0.5rem;}
+        #employees th {width: 150px;}
+        section {background: linear-gradient(146deg, rgba(175,0,209,1) 0%, rgba(141,37,226,1) 30%, rgba(16,0,255,1) 100%);height: 100vh;display: grid;place-items: center;}
+        section > div {max-width: 900px;}
+    </style>
+    <section>
+        <div>
+            <h1>Lead Record form API Call</h1>
+            <!-- loader -->
+            <div class="spinner-border" role="status" id="loading">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <!-- table for showing data -->
+            <table id="employees" ></table>
+            <p><strong>API Access Point:</strong></p>
+            <p>https://100-aek-913.mktorest.com/rest/v1/leads.json?access_token=ed358142-76c8-49dd-8fc1-19e1fd5a66ad:ab&filterType=email&filterValues=parth.sharma@grazitti.com</p>
+        </div>
+    </section>
+
+    <script>
+        // api url
+            const api_url = "https://100-aek-913.mktorest.com/rest/v1/leads.json?access_token=ed358142-76c8-49dd-8fc1-19e1fd5a66ad:ab&filterType=email&filterValues=parth.sharma@grazitti.com";
+
+            // Defining async function
+            async function getapi(url) {
+                // Storing response
+                const response = await fetch(url);
+                // Storing data in form of JSON
+                var data = await response.json();
+                if (response) {
+                    hideloader();
+                }
+                show(data);
+            }
+            // Calling that async function
+            getapi(api_url);
+
+            // Function to hide the loader
+            function hideloader() {
+                document.getElementById('loading').style.display = 'none';
+            }
+            // Function to define innerHTML for HTML table
+            function show(data) {
+     
+                let tab = '';
+            // Loop to access all rows 
+            for (let r of data.result) {
+                tab  = '<tr><th>ID</th><td>' + r.id + '</td></tr>'
+                tab += '<tr><th>Name</th><td>' + r.firstName + ' ' +  r.lastName + '</td></tr>'
+                tab += '<tr><th>Email</th><td>' + r.email + '</td></tr>'
+                tab += '<tr><th>Created At</th><td>' + r.createdAt + '</td></tr>'
+                tab += '<tr><th>Updated At</th><td>' + r.updatedAt + '</td></tr>';
+            }
+            // Setting innerHTML as tab variable
+            document.getElementById("employees").innerHTML = tab;
+        }
+    </script>
+    
+</body>
+</html>
