@@ -1,0 +1,25 @@
+Live SASS Compiler:
+https://marketplace.visualstudio.com/items?itemName=ritwickdey.live-sass
+
+Documentation:
+https://github.com/ritwickdey/vscode-live-sass-compiler/blob/master/docs/settings.md
+
+"liveSassCompile.settings.autoprefix": [
+        ">0.3%",
+        "last 2 versions"
+    ]
+
+https://browsersl.ist/#q=%3E0.3%25%2C+last+2+versions%2C+not+dead
+
+"liveSassCompile.settings.showOutputWindow": false,
+
+
+---------------------------
+font-size: calc(14px + (26 - 14) * ((100vw - 300px) / (1600 - 300)));
+
+---------------------------https://www.udemy.com/course/marketo-api-webhooks-and-velocity-scripts/
+
+---------------------------
+https://www.youtube.com/watch?v=OnWm3hqrknQ
+
+---------------------------
